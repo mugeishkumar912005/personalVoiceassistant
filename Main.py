@@ -7,6 +7,7 @@ from random import choice as C
 import keyboard as Keyb
 import os
 import subprocess as sb
+from onlinethings import findip, SearchonGoogle, Searchwiki, youtubevid
 
 engine = tx.init('sapi5')
 engine.setProperty('volume', 2.5)
@@ -36,10 +37,16 @@ def RecSpeech():
                 else:
                     Speak(f"Have a good day! {User}")
                 exit()
+        except S.UnknownValueError:
+            Speak("Sorry, I did not catch that. Could you please repeat?")
+            return None
+        except S.RequestError:
+            Speak("Sorry, I'm having trouble connecting to the service. Please check your internet connection.")
+            return None
         except Exception as e:
             print(f"An error occurred: {e}")
-            Speak(f"Sorry, comeback again {User}")
-            query = None
+            Speak(f"Sorry, something went wrong. Please try again.")
+            return None
         return query
 
 listening = False
@@ -88,13 +95,44 @@ while True:
                 Speak("Opening Camera sir!")
                 sb.run('start microsoft.windows.camera:', shell=True)
             elif "open notepad" in query or "notepad" in query:
-                Speak("Opening NotePad sir!")
+                Speak("Opening Notepad sir!")
                 n_pad = "c:\\windows\\notepad.exe"
                 os.startfile(n_pad)
-            elif "open whatsapp beta" in query or "whatsapp" in query:
-                Speak("Opening Whatsapp sir!")
-                w_app = "whatsapp:\\chat\\?code=ItJpMyA3l9EJ80vZtW7T4C"
+            elif "open vscode" in query or "open vs code" in query:
+                Speak("Opening VSCode sir!")
+                w_app = "C:\\Users\\Mugeish\\OneDrive\\Desktop\\Visual Studio Code.lnk"
                 os.startfile(w_app)
-            elif "knox goose" in query:
+            elif "open a game" in query or "play a game" in query:
+                Speak("Opening a game sir!")
+                S_app = "C:\\Users\\Public\\Desktop\\Play Ghost of Tsushima.lnk"
+                os.startfile(S_app)
+            elif "ip address" in query or "my ip" in query:
+                ip = findip()
+                if ip:
+                    Speak(f'Your IP is {ip}, sir')
+                else:
+                    Speak("Sorry, I couldn't retrieve your IP address.")
+            elif "youtube" in query or "play on youtube" in query:
+                Speak('What do you want me to play, sir?')
+                Vid = RecSpeech()
+                if Vid:
+                    youtubevid(Vid.lower())
+            elif "google" in query or "search on google" in query:
+                Speak("What do you want me to search on Google, sir?")
+                prt = RecSpeech()
+                if prt:
+                    SearchonGoogle(prt.lower())
+            elif "wikipedia" in query or "search on wikipedia" in query:
+                Speak("What do you want me to search on Wikipedia, sir?")
+                prt = RecSpeech()
+                if prt:
+                    R = Searchwiki(prt.lower())
+                    if R:
+                        Speak(f'According to Wikipedia, {R}')
+                    else:
+                        Speak("Sorry, I couldn't find any information on Wikipedia.")
+            elif "stop listening goose" in query or "stop" in query or "exit" in query:
                 Speak("Fine Sir, Bye!")
                 break
+            else:
+                Speak("Sorry, I didn't understand that. Could you please repeat or try a different command?")
